@@ -10,7 +10,9 @@ import org.springframework.context.annotation.PropertySource;
 @SpringBootApplication(scanBasePackages = "ninja.options.opscan")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 @PropertySource(value = {"classpath:secrets.properties",
-        "file:/run/secrets/optrack-secrets.properties"}, ignoreResourceNotFound = true)
+        "file:/etc/opscan-secrets.properties",
+        "file:/run/secrets/opscan-secrets.properties",
+        "file:/secrets/secrets.properties"}, ignoreResourceNotFound = true)
 public class DiscordMain implements CommandLineRunner {
 
 

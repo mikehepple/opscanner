@@ -3,7 +3,7 @@ package ninja.options.opscan.cli.scan;
 import lombok.RequiredArgsConstructor;
 import ninja.options.opscan.scanners.Scanner;
 import ninja.options.opscan.scanners.ScannerSettings;
-import ninja.options.opscan.scanners.vertical.ShortCallScanner;
+import ninja.options.opscan.scanners.impl.ShortCallScanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -31,6 +31,8 @@ public class ShortCallCommand extends AbstractScannerCommand {
     private float costBasis;
     @CommandLine.Option(names = {"-i", "--allow-in-the-money"}, defaultValue = "false")
     private boolean allowITM;
+    @CommandLine.Option(names = {"-s", "--min-strike"}, defaultValue = "0")
+    private float minStrike;
 
     @Override
     ScannerSettings settings() {
@@ -42,7 +44,8 @@ public class ShortCallCommand extends AbstractScannerCommand {
                 maxDelta,
                 minDelta,
                 costBasis,
-                allowITM
+                allowITM,
+                minStrike
         );
     }
 

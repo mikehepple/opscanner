@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import ninja.options.opscan.scanners.Directionality;
 import ninja.options.opscan.scanners.Scanner;
 import ninja.options.opscan.scanners.ScannerSettings;
-import ninja.options.opscan.scanners.vertical.ShortVerticalScanner;
+import ninja.options.opscan.scanners.impl.ShortVerticalScanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@CommandLine.Command(name = "short-vertical", aliases = "sv")
+@CommandLine.Command(name = "short-vertical", aliases = {"sv", "credit-spread", "cs"})
 public class ShortVerticalSpreadCommand extends AbstractScannerCommand {
 
     private final ShortVerticalScanner shortVerticalScanner;

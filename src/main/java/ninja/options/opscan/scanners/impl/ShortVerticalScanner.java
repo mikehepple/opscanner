@@ -1,4 +1,4 @@
-package ninja.options.opscan.scanners.vertical;
+package ninja.options.opscan.scanners.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import ninja.options.opscan.scanners.Directionality;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ninja.options.opscan.scanners.vertical.ScannerUtils.*;
+import static ninja.options.opscan.scanners.impl.ScannerUtils.*;
 
 @Component
 @Slf4j
@@ -80,10 +80,10 @@ public class ShortVerticalScanner implements Scanner<ShortVerticalScanner.Settin
                                         .build()
                                 )
                                 .filter(ShortVerticalSpread::valid)
-                                .filter(s -> s.premiumWidthRatio() > settings.minPremiumWidthRatio)
-                                .filter(s -> s.width() <= settings.maxWidth)
-                                .filter(s -> s.getShortPosition().getDelta() <= settings.maxShortDelta)
-                                .filter(s -> s.getShortPosition().getDelta() >= -1*settings.maxShortDelta)
+                                .filter(s -> settings.minPremiumWidthRatio == 0f || s.premiumWidthRatio() > settings.minPremiumWidthRatio)
+                                .filter(s -> settings.maxWidth == 0f || s.width() <= settings.maxWidth)
+                                .filter(s -> settings.maxShortDelta == 0f || s.getShortPosition().getDelta() <= settings.maxShortDelta)
+                                .filter(s -> settings.maxShortDelta == 0f || s.getShortPosition().getDelta() >= -1*settings.maxShortDelta)
                 );
 
     }

@@ -1,4 +1,4 @@
-package ninja.options.opscan.scanners.vertical;
+package ninja.options.opscan.scanners.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import ninja.options.opscan.scanners.ScanResult;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ninja.options.opscan.scanners.vertical.ScannerUtils.*;
+import static ninja.options.opscan.scanners.impl.ScannerUtils.*;
 
 @Component
 @Slf4j
@@ -27,7 +27,8 @@ public class ShortPutScanner implements Scanner<ShortPutScanner.Settings> {
                                   float minAnnualizedRoi,
                                   float maxDelta,
                                   float minDelta,
-                                  boolean allowITM) implements ScannerSettings {
+                                  boolean allowITM,
+                                  float maxStrike) implements ScannerSettings {
 
     }
 
@@ -66,6 +67,7 @@ public class ShortPutScanner implements Scanner<ShortPutScanner.Settings> {
 
         return fixITMStatus(stockprice, contracts.stream())
                 .filter((c) -> settings.allowITM || !c.isInTheMoney())
+                .filter((c) -> settings.maxStrike <= 0f || c.getStrikePrice() < settings.maxStrike)
                 .filter((c) -> settings.maxDelta == 0f || (ensurePositive(c.getDelta()) < ensurePositive(settings.maxDelta)))
                 .filter((c) -> settings.minDelta == 0f || (ensurePositive(c.getDelta()) > ensurePositive(settings.minDelta)))
                 .map((c) -> ShortPut.builder().shortPosition(c).build())

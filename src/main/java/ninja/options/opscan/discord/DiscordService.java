@@ -1,6 +1,5 @@
 package ninja.options.opscan.discord;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -16,6 +15,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import ninja.options.opscan.cli.OpscanCLI;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import picocli.CommandLine;
@@ -31,14 +31,21 @@ import java.util.Optional;
 @Profile("discord")
 @Service
 @Slf4j
-@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class DiscordService extends ListenerAdapter {
 
+
+    private String discordToken;
     private CommandLine.IFactory iFactory;
+
+    public DiscordService(@Value("${discord.token}") String discordToken,
+                          @Autowired CommandLine.IFactory iFactory) {
+        this.discordToken = discordToken;
+        this.iFactory = iFactory;
+    }
 
     @PostConstruct
     void setup() throws LoginException {
-        JDA jda = JDABuilder.createLight("OTA5NTgzNTY2MjYwODE3OTMw.YZGZtQ.749YABi6EAodaQ4G2ZgYs771ymg")
+        JDA jda = JDABuilder.createLight(discordToken)
                 .addEventListeners(this)
                 .setActivity(Activity.playing("Type /opscan"))
                 .build();

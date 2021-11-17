@@ -1,4 +1,4 @@
-package ninja.options.opscan.scanners.vertical;
+package ninja.options.opscan.scanners.impl;
 
 import ninja.options.opscan.tdameritrade.model.TDAOption;
 import ninja.options.opscan.tdameritrade.model.TDAPutCall;
@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static ninja.options.opscan.scanners.vertical.LongVerticalScanner.*;
+import static ninja.options.opscan.scanners.impl.LongVerticalScanner.*;
 
 class LongVerticalScannerTest {
 

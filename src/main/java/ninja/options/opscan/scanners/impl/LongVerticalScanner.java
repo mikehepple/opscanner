@@ -1,4 +1,4 @@
-package ninja.options.opscan.scanners.vertical;
+package ninja.options.opscan.scanners.impl;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ninja.options.opscan.scanners.vertical.ScannerUtils.filterByDate;
-import static ninja.options.opscan.scanners.vertical.ScannerUtils.fixITMStatus;
+import static ninja.options.opscan.scanners.impl.ScannerUtils.filterByDate;
+import static ninja.options.opscan.scanners.impl.ScannerUtils.fixITMStatus;
 
 @Component
 @Slf4j

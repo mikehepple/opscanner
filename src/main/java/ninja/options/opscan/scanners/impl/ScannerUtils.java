@@ -1,4 +1,4 @@
-package ninja.options.opscan.scanners.vertical;
+package ninja.options.opscan.scanners.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
