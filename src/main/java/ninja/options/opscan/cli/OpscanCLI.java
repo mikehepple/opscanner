@@ -9,7 +9,11 @@ import picocli.CommandLine;
 import java.io.PrintStream;
 
 @Component
-@CommandLine.Command(name="opscan", mixinStandardHelpOptions = true, subcommands = {ScanCommand.class})
+@CommandLine.Command(
+        name="opscan",
+        mixinStandardHelpOptions = true,
+        subcommands = {ScanCommand.class}
+)
 public class OpscanCLI {
 
     @Getter

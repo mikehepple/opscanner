@@ -10,7 +10,11 @@ import picocli.CommandLine;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@CommandLine.Command(name = "short-put", aliases = {"sp", "csp", "naked-put", "np"})
+@CommandLine.Command(
+        name = "short-put",
+        aliases = {"sp", "csp", "naked-put", "np"},
+        showDefaultValues = true
+)
 public class ShortPutCommand extends AbstractScannerCommand {
 
     private final ShortPutScanner shortPutScanner;

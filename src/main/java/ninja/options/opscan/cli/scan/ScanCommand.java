@@ -3,13 +3,13 @@ package ninja.options.opscan.cli.scan;
 import ninja.options.opscan.cli.OpscanCLI;
 import ninja.options.opscan.results.ScanResultTable;
 import ninja.options.opscan.results.TableSettings;
+import ninja.options.opscan.scanners.ScanResult;
 import ninja.options.opscan.scanners.Scanner;
 import ninja.options.opscan.scanners.ScannerSettings;
 import ninja.options.opscan.tdameritrade.TDAService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
-import tech.tablesaw.api.Table;
 
 import java.io.PrintStream;
 
@@ -20,7 +20,8 @@ import java.io.PrintStream;
                 LongVerticalSpreadCommand.class,
                 ShortPutCommand.class,
                 ShortCallCommand.class
-        }
+        },
+        showDefaultValues = true
 )
 public class ScanCommand {
 
@@ -28,18 +29,30 @@ public class ScanCommand {
     OpscanCLI parentCommand;
 
     enum OutputOptions {
-        CONSOLE, CSV;
+        LIST, TABLE, CSV;
 
-        void output(Table table, PrintStream printStream) {
+        void output(ScanResultTable table, PrintStream printStream) {
             switch (this) {
-                case CONSOLE -> printStream.println(table.printAll());
-                case CSV -> table.write().csv(printStream);
+                case LIST -> {
+                    printStream.println(" ".repeat(9) + table.getTable().name());
+                    printStream.println("");
+                    table.getTable().column("description")
+                            .first(15)
+                            .asList().forEach(printStream::println);
+                }
+                case TABLE ->
+                    printStream.println(table.getTable().removeColumns("description").printAll());
+
+                case CSV -> table.getTable().write().csv(printStream);
             }
         }
 
-        void noResults(PrintStream printStream) {
+        void noResults(String symbol, String strategy, ScannerSettings settings, PrintStream printStream) {
             switch (this) {
-                case CONSOLE -> printStream.println("no results");
+                case LIST, TABLE -> {
+                    printStream.println(header(symbol, strategy, settings.description()));
+                    printStream.println("no results");
+                }
                 case CSV -> {}
             }
         }
@@ -50,7 +63,7 @@ public class ScanCommand {
     @CommandLine.Parameters(paramLabel = "SYMBOL")
     private String symbol;
 
-    @CommandLine.Option(names = {"--output-format"}, defaultValue = "CONSOLE")
+    @CommandLine.Option(names = {"--output-format"}, defaultValue = "LIST")
     private OutputOptions outputOption;
 
     @CommandLine.Option(names = {"-s", "--sort-by"})
@@ -58,7 +71,6 @@ public class ScanCommand {
 
     @CommandLine.Option(names = {"-d", "--sort-descending"})
     private boolean sortDescending;
-
 
     @Autowired
     public ScanCommand(TDAService tdaService) {
@@ -74,23 +86,27 @@ public class ScanCommand {
         }
 
         if (results.isEmpty()) {
-            this.outputOption.noResults(parentCommand.getPrintStream());
+            this.outputOption.noResults(symbol, scanner.name(), settings, parentCommand.getPrintStream());
             return 99;
         }
 
-        ScanResultTable table = new ScanResultTable(results, tableSettings());
+        ScanResultTable table = new ScanResultTable(results, tableSettings(results.get(0), scanner, settings));
 
-        this.outputOption.output(table.getTable(), parentCommand.getPrintStream());
+        this.outputOption.output(table, parentCommand.getPrintStream());
 
         return 0;
     }
 
-    private TableSettings tableSettings() {
+    private <S extends ScannerSettings> TableSettings tableSettings(ScanResult result, Scanner<S> scanner, S settings) {
         return new TableSettings(
                 sortBy,
                 sortDescending,
-                symbol
+                header(symbol, scanner.name(), settings.description())
         );
+    }
+
+    static String header(String symbol, String name, String description) {
+        return String.format("$%s (%s) - %s", symbol, name, description);
     }
 
 }

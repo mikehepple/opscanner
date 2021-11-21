@@ -9,6 +9,7 @@ import ninja.options.opscan.tdameritrade.model.TDAOption;
 import ninja.options.opscan.tdameritrade.model.TDAOptionChain;
 import org.springframework.stereotype.Component;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,49 @@ public class ShortCallScanner implements Scanner<ShortCallScanner.Settings> {
                                   float costBasis,
                                   boolean allowITM,
                                   float minStrike) implements ScannerSettings {
+        @Override
+        public String description() {
+            List<String> tokens = new ArrayList<>();
 
+            if (minStrike != 0) {
+                tokens.add(String.format("Over $%.2f", minStrike));
+            }
+
+            if (costBasis != 0) {
+                tokens.add(String.format("Cost basis: $%.2f", costBasis));
+            }
+
+            if (minDte != 0 && maxDte != 0) {
+                tokens.add(String.format("DTE: over %d, under %d", minDte, maxDte));
+            } else if (minDte != 0) {
+                tokens.add(String.format("DTE: over %d", minDte));
+            } else if (maxDte != 0) {
+                tokens.add(String.format("DTE: under %d", maxDte));
+            }
+
+            if (minRoi != 0) {
+                tokens.add(String.format("ROI: over %s%%", NumberFormat.getPercentInstance().format(minRoi)));
+            }
+
+            if (minAnnualizedRoi != 0) {
+                tokens.add(String.format("Annualized ROI: over %f%%",
+                        NumberFormat.getPercentInstance().format(minAnnualizedRoi)));
+            }
+
+            if (minDelta != 0 && maxDelta != 0) {
+                tokens.add(String.format("Delta: over %.2f, under %.2f", minDelta, maxDelta));
+            } else if (minDelta != 0) {
+                tokens.add(String.format("Delta: over %.2f", minDelta));
+            } else if (maxDelta != 0) {
+                tokens.add(String.format("Delta: under %.2f", maxDelta));
+            }
+
+            if (allowITM) {
+                tokens.add("Include ITM options");
+            }
+
+            return String.join(", ", tokens);
+        }
     }
 
     @Override
@@ -45,6 +88,11 @@ public class ShortCallScanner implements Scanner<ShortCallScanner.Settings> {
         filterChain((float) optionChain.getUnderlyingPrice(), settings, results, callMap);
 
         return results;
+    }
+
+    @Override
+    public String name() {
+        return "Short Call";
     }
 
     private void filterChain(float stockprice, Settings settings, List<ScanResult> results,
@@ -80,4 +128,6 @@ public class ShortCallScanner implements Scanner<ShortCallScanner.Settings> {
 
 
     }
+
+
 }

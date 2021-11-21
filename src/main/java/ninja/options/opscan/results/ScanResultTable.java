@@ -2,7 +2,7 @@ package ninja.options.opscan.results;
 
 import lombok.Getter;
 import ninja.options.opscan.scanners.ScanResult;
-import ninja.options.opscan.strategy.Strategy;
+import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.sorting.Sort;
@@ -27,7 +27,11 @@ public class ScanResultTable {
 
         results.stream()
                 .map(ScanResult::strategy)
-                .map(Strategy::toColumns)
+                .map(s -> {
+                    var cols = new ArrayList<>(s.toColumns());
+                    cols.add(StringColumn.create("description", s.description()));
+                    return cols;
+                })
                 .forEach(cl -> {
                     cl.forEach(c -> {
                         if (!columnMap.containsKey(c.name())) {

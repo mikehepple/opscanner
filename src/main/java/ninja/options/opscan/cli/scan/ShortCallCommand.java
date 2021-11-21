@@ -10,7 +10,11 @@ import picocli.CommandLine;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@CommandLine.Command(name = "short-call", aliases = {"sc", "cc", "naked-call", "nc"})
+@CommandLine.Command(
+        name = "short-call",
+        aliases = {"sc", "cc", "naked-call", "nc"},
+        showDefaultValues = true
+)
 public class ShortCallCommand extends AbstractScannerCommand {
 
     private final ShortCallScanner shortCallScanner;

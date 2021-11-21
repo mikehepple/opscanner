@@ -1,5 +1,6 @@
 package ninja.options.opscan.scanners.impl;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import ninja.options.opscan.scanners.Directionality;
 import ninja.options.opscan.scanners.ScanResult;
@@ -27,8 +28,38 @@ public class ShortVerticalScanner implements Scanner<ShortVerticalScanner.Settin
                                   float maxWidth,
                                   float minPremiumWidthRatio,
                                   float maxShortDelta,
-                                  Directionality directionality) implements ScannerSettings {
+                                  @NonNull Directionality directionality) implements ScannerSettings {
+        @Override
+        public String description() {
+            List<String> tokens = new ArrayList<>();
 
+            if (minDte != 0 && maxDte != 0) {
+                tokens.add(String.format("DTE: over %d, under %d", minDte, maxDte));
+            } else if (minDte != 0) {
+                tokens.add(String.format("DTE: over %d", minDte));
+            } else if (maxDte != 0){
+                tokens.add(String.format("DTE: under %d", maxDte));
+            }
+
+            if (maxWidth != 0) {
+                tokens.add(String.format("Max Width: $%.2f", maxWidth));
+            }
+
+            if (minPremiumWidthRatio != 0) {
+                tokens.add(String.format("Min Ratio: %.2f", minPremiumWidthRatio));
+            }
+
+            if (maxShortDelta != 0) {
+                tokens.add(String.format("Short leg delta: under %.2f", maxShortDelta));
+            }
+
+            switch (directionality) {
+                case BEARISH -> tokens.add("Puts only");
+                case BULLISH -> tokens.add("Calls only");
+            }
+
+            return String.join(", ", tokens);
+        }
     }
 
     @Override
@@ -41,17 +72,22 @@ public class ShortVerticalScanner implements Scanner<ShortVerticalScanner.Settin
         var callMap = filterByDate(optionChain.getCallExpDateMap(), settings.minDte, settings.maxDte);
         var putMap = filterByDate(optionChain.getPutExpDateMap(), settings.minDte, settings.maxDte);
 
-        if (settings.directionality == null || settings.directionality == Directionality.BEARISH) {
+        if (settings.directionality == Directionality.NONE || settings.directionality == Directionality.BEARISH) {
             log.info("checking for call spreads..");
             filterChain(settings, results, callMap);
         }
 
-        if (settings.directionality == null || settings.directionality == Directionality.BULLISH) {
+        if (settings.directionality == Directionality.NONE || settings.directionality == Directionality.BULLISH) {
             log.info("checking for put spreads..");
             filterChain(settings, results, putMap);
         }
 
         return results;
+    }
+
+    @Override
+    public String name() {
+        return "Credit Spread";
     }
 
     private void filterChain(Settings settings, List<ScanResult> results, Map<String, Map<String, List<TDAOption>>> optionMap) {

@@ -9,11 +9,12 @@ import ninja.options.opscan.tdameritrade.model.TDAPutCall;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.sorting.Sort;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import static ninja.options.opscan.strategy.Columns.*;
-import static ninja.options.opscan.strategy.StrategyUtils.annualizedReturn;
-import static ninja.options.opscan.strategy.StrategyUtils.calculateRoi;
+import static ninja.options.opscan.strategy.StrategyUtils.*;
+import static ninja.options.opscan.strategy.StrategyUtils.longToDate;
 
 @Builder
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -75,4 +76,19 @@ public class ShortCall implements Strategy {
     public Sort defaultSort() {
         return Sort.on("roi_annual", Sort.Order.DESCEND);
     }
+
+    @Override
+    public String description() {
+        return String.format("%10s %10s (%-3dd) @ $%.2f - ROI %3s (%3s annualized) - Upside $%2f",
+                NumberFormat.getCurrencyInstance().format(shortPosition.getStrikePrice()),
+                expiryToString(longToDate(shortPosition.getExpirationDate())),
+                Math.round(shortPosition.getDaysToExpiration()),
+                premium(),
+                NumberFormat.getPercentInstance().format(roi()),
+                NumberFormat.getPercentInstance().format(annualizedRoi()),
+                this.getShortPosition().getStrikePrice() - costBasis
+        );
+    }
+
+
 }

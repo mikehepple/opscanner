@@ -36,6 +36,51 @@ public class LongVerticalScanner implements Scanner<LongVerticalScanner.Settings
                                   int maxStrikesFromATM,
                                   Directionality directionality) implements ScannerSettings {
 
+        @Override
+        public String description() {
+            List<String> tokens = new ArrayList<>();
+
+            if (minDte != 0 && maxDte != 0) {
+                tokens.add(String.format("DTE: over %d, under %d", minDte, maxDte));
+            } else if (minDte != 0) {
+                tokens.add(String.format("DTE: over %d", minDte));
+            } else if (maxDte != 0){
+                tokens.add(String.format("DTE: under %d", maxDte));
+            }
+
+            if (maxWidth != 0) {
+                tokens.add(String.format("Max Width: $%.2f", maxWidth));
+            }
+
+            if (maxPremiumWidthRatio != 0) {
+                tokens.add(String.format("Max Ratio: %.2f", maxPremiumWidthRatio));
+            }
+
+            if (maxShortDelta != 0) {
+                tokens.add(String.format("Short leg delta: under %.2f", maxShortDelta));
+            }
+
+            if (maxLongDelta != 0) {
+                tokens.add(String.format("Long leg delta: under %.2f", maxLongDelta));
+            }
+
+            if (maxStrikesFromATM != 0) {
+                tokens.add(String.format("Max strikes from ATM: %d", maxStrikesFromATM));
+            }
+
+            switch (directionality) {
+                case BEARISH -> tokens.add("Puts only");
+                case BULLISH -> tokens.add("Calls only");
+            }
+
+            return String.join(", ", tokens);
+
+        }
+    }
+
+    @Override
+    public String name() {
+        return "Debit Spread";
     }
 
     @Override
@@ -50,12 +95,12 @@ public class LongVerticalScanner implements Scanner<LongVerticalScanner.Settings
         var putMap = filterByDate(optionChain.getPutExpDateMap(),
                 settings.minDte, settings.maxDte);
 
-        if (settings.directionality == null || settings.directionality == Directionality.BULLISH) {
+        if (settings.directionality == Directionality.NONE || settings.directionality == Directionality.BULLISH) {
             log.info("checking for call spreads..");
             filterChain((float) optionChain.getUnderlyingPrice(), settings, results, callMap);
         }
 
-        if (settings.directionality == null || settings.directionality == Directionality.BEARISH) {
+        if (settings.directionality == Directionality.NONE || settings.directionality == Directionality.BEARISH) {
             log.info("checking for put spreads..");
             filterChain((float) optionChain.getUnderlyingPrice(),settings, results, putMap);
         }
@@ -102,10 +147,10 @@ public class LongVerticalScanner implements Scanner<LongVerticalScanner.Settings
                                         .build()
                                 )
                                 .filter(LongVerticalSpread::valid)
-                        .filter(s -> s.width() <= settings.maxWidth)
-                        .filter(s -> s.premiumWidthRatio() <= settings.maxPremiumWidthRatio)
-                        .filter(s -> s.getLongPosition().getDelta() <= settings.maxLongDelta)
-                        .filter(s -> s.getShortPosition().getDelta() <= settings.maxShortDelta)
+                        .filter(s -> settings.maxWidth == 0 || s.width() <= settings.maxWidth)
+                        .filter(s -> settings.maxPremiumWidthRatio == 0 || s.premiumWidthRatio() <= settings.maxPremiumWidthRatio)
+                        .filter(s -> settings.maxLongDelta == 0 || s.getLongPosition().getDelta() <= settings.maxLongDelta)
+                        .filter(s -> settings.maxShortDelta == 0 || s.getShortPosition().getDelta() <= settings.maxShortDelta)
                 );
 
 

@@ -7,5 +7,6 @@ import java.util.List;
 public interface Scanner<S extends ScannerSettings> {
 
     List<ScanResult> scan(TDAOptionChain optionChain, S settings);
+    String name();
 
 }

@@ -4,8 +4,6 @@ import ninja.options.opscan.tdameritrade.model.TDAOption;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.sorting.Sort;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.List;
 
 public interface Strategy {
@@ -20,5 +18,6 @@ public interface Strategy {
 
     List<Column<?>> toColumns();
     Sort defaultSort();
+    String description();
 
 }
