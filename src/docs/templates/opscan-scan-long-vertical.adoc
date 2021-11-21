@@ -1,0 +1,26 @@
+:doctype: manpage
+:revnumber:
+:manmanual: Opscan Manual
+:mansource:
+:man-linkstyle: pass:[blue R < >]
+:stylesheet: adoc-readthedocs.css
+
+:includedir: ../../../target/generated-picocli-docs
+
+include::{includedir}/opscan-scan-long-vertical.adoc[tag=picocli-generated-man-section-header]
+
+include::{includedir}/opscan-scan-long-vertical.adoc[tag=picocli-generated-man-section-name]
+
+include::{includedir}/opscan-scan-long-vertical.adoc[tag=picocli-generated-man-section-synopsis]
+
+include::{includedir}/opscan-scan-long-vertical.adoc[tag=picocli-generated-man-section-arguments]
+
+include::{includedir}/opscan-scan-long-vertical.adoc[tag=picocli-generated-man-section-commands]
+
+// tag::examples[]
+== Examples
+
+// end:examples[]
+
+include::{includedir}/opscan-scan-long-vertical.adoc[tag=picocli-generated-man-section-options]
+

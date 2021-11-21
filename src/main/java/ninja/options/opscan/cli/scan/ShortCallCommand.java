@@ -13,13 +13,14 @@ import picocli.CommandLine;
 @CommandLine.Command(
         name = "short-call",
         aliases = {"sc", "cc", "naked-call", "nc"},
-        showDefaultValues = true
+        showDefaultValues = true,
+        description = "Search for a short call / covered call"
 )
 public class ShortCallCommand extends AbstractScannerCommand {
 
     private final ShortCallScanner shortCallScanner;
 
-    @CommandLine.Option(names = {"-m", "--min-dte"}, defaultValue = "45")
+    @CommandLine.Option(names = {"-m", "--min-dte"}, defaultValue = "30")
     private int minDte;
     @CommandLine.Option(names = {"-M", "--max-dte"}, defaultValue = "60")
     private int maxDte;
@@ -37,6 +38,10 @@ public class ShortCallCommand extends AbstractScannerCommand {
     private boolean allowITM;
     @CommandLine.Option(names = {"-s", "--min-strike"}, defaultValue = "0")
     private float minStrike;
+
+    private ShortCallCommand() {
+        this(null);
+    }
 
     @Override
     ScannerSettings settings() {

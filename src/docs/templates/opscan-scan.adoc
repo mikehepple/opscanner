@@ -1,0 +1,85 @@
+:doctype: manpage
+:revnumber:
+:manmanual: Opscan Manual
+:mansource:
+:man-linkstyle: pass:[blue R < >]
+:stylesheet: adoc-readthedocs.css
+
+:includedir: ../../../target/generated-picocli-docs
+
+include::{includedir}/opscan-scan.adoc[tag=picocli-generated-man-section-header]
+
+include::{includedir}/opscan-scan.adoc[tag=picocli-generated-man-section-name]
+
+include::{includedir}/opscan-scan.adoc[tag=picocli-generated-man-section-synopsis]
+
+include::{includedir}/opscan-scan.adoc[tag=picocli-generated-man-section-arguments]
+
+include::{includedir}/opscan-scan.adoc[tag=picocli-generated-man-section-commands]
+
+// tag::examples[]
+== Examples
+
+=== Scan for short puts (Cash-secured puts)
+
+----
+opscan scan SPY csp
+----
+
+xref:opscan-scan-short-put.adoc[More options]
+
+=== Scan for short calls (Covered Calls)
+
+----
+opscan scan SPY cc
+----
+
+xref:opscan-scan-short-call.adoc[More options]
+
+=== Scan for short verticals
+
+----
+opscan scan SPY short-vertical
+----
+
+xref:opscan-scan-short-vertical.adoc[More options]
+
+=== Scan for long verticals
+
+----
+opscan scan SPY long-vertical
+----
+
+xref:opscan-scan-long-vertical.adoc[More options]
+
+=== Scan and output in TABLE mode
+
+==== Basic
+
+----
+opscan scan --output-format=TABLE SPY csp
+----
+
+==== Non-default sorting
+
+----
+opscan scan --output-format=TABLE --sort-by=premium SPY csp
+----
+
+==== Reverse sorting
+
+----
+opscan scan --output-format=TABLE --sort-by=premium --sort-descending SPY csp
+----
+
+=== Scan and output in CSV mode
+
+----
+opscan scan --output-format=CSV SPY csp
+----
+
+
+// end:examples[]
+
+include::{includedir}/opscan-scan.adoc[tag=picocli-generated-man-section-options]
+

@@ -14,13 +14,14 @@ import picocli.CommandLine;
 @CommandLine.Command(
         name = "long-vertical",
         aliases = {"lv", "debit-spread", "ds"},
-        showDefaultValues = true
+        showDefaultValues = true,
+        description = "Search for a long vertical / debit spread"
 )
 public class LongVerticalSpreadCommand extends AbstractScannerCommand {
 
     private final LongVerticalScanner longVerticalScanner;
 
-    @CommandLine.Option(names = {"-m", "--min-dte"}, defaultValue = "45")
+    @CommandLine.Option(names = {"-m", "--min-dte"}, defaultValue = "30")
     private int minDte;
     @CommandLine.Option(names = {"-M", "--max-dte"}, defaultValue = "60")
     private int maxDte;
@@ -36,6 +37,10 @@ public class LongVerticalSpreadCommand extends AbstractScannerCommand {
     private int maxStrikesFromAtm;
     @CommandLine.Option(names = {"-b", "--directionality", "--bias"}, defaultValue = "NONE")
     private Directionality directionality;
+
+    private LongVerticalSpreadCommand() {
+        this(null);
+    }
 
     @Override
     ScannerSettings settings() {

@@ -13,13 +13,14 @@ import picocli.CommandLine;
 @CommandLine.Command(
         name = "short-put",
         aliases = {"sp", "csp", "naked-put", "np"},
-        showDefaultValues = true
+        showDefaultValues = true,
+        description = "Search for a short put / cash-secured put"
 )
 public class ShortPutCommand extends AbstractScannerCommand {
 
     private final ShortPutScanner shortPutScanner;
 
-    @CommandLine.Option(names = {"-m", "--min-dte"}, defaultValue = "45")
+    @CommandLine.Option(names = {"-m", "--min-dte"}, defaultValue = "30")
     private int minDte;
     @CommandLine.Option(names = {"-M", "--max-dte"}, defaultValue = "60")
     private int maxDte;
@@ -35,6 +36,10 @@ public class ShortPutCommand extends AbstractScannerCommand {
     private boolean allowITM;
     @CommandLine.Option(names = {"-s", "--max-strike"}, defaultValue = "0")
     private float maxStrike;
+
+    private ShortPutCommand() {
+        this(null);
+    }
 
     @Override
     ScannerSettings settings() {

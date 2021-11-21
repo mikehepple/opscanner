@@ -1,0 +1,101 @@
+:doctype: manpage
+:revnumber:
+:manmanual: Opscan Manual
+:mansource:
+:man-linkstyle: pass:[blue R < >]
+:stylesheet: adoc-readthedocs.css
+
+:includedir: ../../../target/generated-picocli-docs
+
+include::{includedir}/opscan-scan-short-call.adoc[tag=picocli-generated-man-section-header]
+
+include::{includedir}/opscan-scan-short-call.adoc[tag=picocli-generated-man-section-name]
+
+include::{includedir}/opscan-scan-short-call.adoc[tag=picocli-generated-man-section-synopsis]
+
+include::{includedir}/opscan-scan-short-call.adoc[tag=picocli-generated-man-section-arguments]
+
+include::{includedir}/opscan-scan-short-call.adoc[tag=picocli-generated-man-section-commands]
+
+// tag::examples[]
+== Examples
+
+=== Basic
+
+Search for covered call opportunities in INTC between 30 and 60 days out (default).
+
+----
+opscan scan INTC cc
+----
+
+=== Modifying days to expiry
+
+To change your results to include different days to expiry (DTE), use `--min-dte`, `-m` and `--max-dte`, `-M` (Note - check if the underlying has an expiration in this time or you will get no results!)
+
+----
+opscan scan INTC cc --min-dte=0 --max-dte=14
+----
+----
+opscan scan INTC cc -m 0 -M 14
+----
+
+=== Setting a minimum and maximum delta
+
+To filter your results by the position's delta, use `--min-delta`, `-d` and `--max-delta`, `-D`
+
+----
+opscan scan INTC cc --min-delta=0.1 --max-delta=0.35
+----
+
+=== Setting a minimum strike
+
+If you plan to only sell a call at or above a certain price, you can configure this with `--min-strike`, `-s`
+
+----
+opscan scan INTC cc --min-strike=55
+----
+
+=== Setting a minimum ROI
+
+==== Basic ROI
+
+To filter your results by return on investment (`(premium / strike price) * 100`) use `--min-roi`, `-r`.
+
+For example to require a minimum ROI of 2% use `2`.
+
+----
+opscan scan INTC cc --min-roi=2
+----
+
+==== Annualized ROI
+
+To filter your results by annualized ROI (`roi * (250 / daysToExpiry)`) use `--min-annualized-roi`, `-a`.
+
+For example to require a minimum annualized ROI of 15% use `15`.
+
+----
+opscan scan INTC cc --min-annualized-roi=15
+----
+
+==== Custom cost basis
+
+To calculate ROI based on your purchase price of the stock rather than the strike, use `--cost-basis`, `-c`
+
+For example, if you purchased your shares at $49.50 you would enter `49.5`.
+
+----
+opscan scan INTC cc --cost-basis=49.5
+----
+
+=== Allowing "in the money"
+
+By default only "out of the money" (i.e. strikes above the current stock price) will be returned. Set `--allow-in-the-money`, `-i` to change this.
+
+----
+opscan scan INTC cc --allow-in-the-money
+----
+
+// end:examples[]
+
+include::{includedir}/opscan-scan-short-call.adoc[tag=picocli-generated-man-section-options]
+

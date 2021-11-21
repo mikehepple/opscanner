@@ -50,3 +50,9 @@ jobs:
           registry: docker.pkg.github.com
           repository: mikehepple/opscanner/discord
           tag_with_ref: true
+
+      - name: Publish docs
+        uses: JamesIves/github-pages-deploy-action@4.1.6
+        with:
+          branch: gh-pages
+          folder: target/generated-html

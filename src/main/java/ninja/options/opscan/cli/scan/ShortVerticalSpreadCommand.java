@@ -14,15 +14,16 @@ import picocli.CommandLine;
 @CommandLine.Command(
         name = "short-vertical",
         aliases = {"sv", "credit-spread", "cs"},
-        showDefaultValues = true
+        showDefaultValues = true,
+        description = "Search for a short vertical / credit spread"
 )
 public class ShortVerticalSpreadCommand extends AbstractScannerCommand {
 
     private final ShortVerticalScanner shortVerticalScanner;
 
-    @CommandLine.Option(names = {"-m", "--min-dte"}, defaultValue = "45")
+    @CommandLine.Option(names = {"-m", "--min-dte"}, defaultValue = "30")
     private int minDte;
-    @CommandLine.Option(names = {"-M", "--max-dte"}, defaultValue = "70")
+    @CommandLine.Option(names = {"-M", "--max-dte"}, defaultValue = "60")
     private int maxDte;
     @CommandLine.Option(names = {"-w", "--max-width"}, defaultValue = "15")
     private float maxWidth;
@@ -32,6 +33,10 @@ public class ShortVerticalSpreadCommand extends AbstractScannerCommand {
     private float maxShortDelta;
     @CommandLine.Option(names = {"-b", "--directionality", "--bias"}, defaultValue = "NONE")
     private Directionality directionality;
+
+    private ShortVerticalSpreadCommand() {
+        this(null);
+    }
 
     @Override
     ScannerSettings settings() {

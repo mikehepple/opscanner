@@ -21,7 +21,8 @@ import java.io.PrintStream;
                 ShortPutCommand.class,
                 ShortCallCommand.class
         },
-        showDefaultValues = true
+        showDefaultValues = true,
+        description = "Scan option chains for specific strategies"
 )
 public class ScanCommand {
 
@@ -60,21 +61,41 @@ public class ScanCommand {
 
     private TDAService tdaService;
 
-    @CommandLine.Parameters(paramLabel = "SYMBOL")
+    @CommandLine.Parameters(
+            paramLabel = "SYMBOL",
+            description = "The stock symbol to scan, e.g. SPY"
+    )
     private String symbol;
 
-    @CommandLine.Option(names = {"--output-format"}, defaultValue = "LIST")
+    @CommandLine.Option(
+            names = {"--output-format"},
+            defaultValue = "LIST",
+            description = "How to format the results. Other options TABLE and CSV."
+    )
     private OutputOptions outputOption;
 
-    @CommandLine.Option(names = {"-s", "--sort-by"})
+    @CommandLine.Option(
+            names = {"-s", "--sort-by"},
+            description = "In TABLE or CSV output mode, what column to sort by. Ignored in other modes.",
+            defaultValue = ""
+
+    )
     private String sortBy;
 
-    @CommandLine.Option(names = {"-d", "--sort-descending"})
+    @CommandLine.Option(
+            names = {"-d", "--sort-descending"},
+            description = "In TABLE or CSV output mode, reverse the sort order. Ignored in other modes.",
+            defaultValue = "false"
+    )
     private boolean sortDescending;
 
     @Autowired
     public ScanCommand(TDAService tdaService) {
         this.tdaService = tdaService;
+    }
+
+    // Needed for doc generation
+    private ScanCommand() {
     }
 
     <S extends ScannerSettings> Integer runScan(Scanner<S> scanner, S settings) {
