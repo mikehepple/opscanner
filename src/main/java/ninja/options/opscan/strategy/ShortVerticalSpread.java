@@ -29,11 +29,11 @@ public class ShortVerticalSpread extends AbstractVerticalSpread {
     }
 
     public float maxLoss() {
-        return width() - premium();
+        return width() - (-1*premium());
     }
 
     public float maxProfit() {
-        return premium();
+        return -1*premium();
     }
 
     @Override

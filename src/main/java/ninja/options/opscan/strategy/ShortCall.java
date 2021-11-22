@@ -79,7 +79,7 @@ public class ShortCall implements Strategy {
 
     @Override
     public String description() {
-        return String.format("%10s %10s (%-3dd) @ $%.2f - ROI %3s (%3s annualized) - Upside $%2f",
+        return String.format("%10s %10s (%-3dd) @ $%.2f - ROI %4s (%4s annualized) - Upside $%2f",
                 NumberFormat.getCurrencyInstance().format(shortPosition.getStrikePrice()),
                 expiryToString(longToDate(shortPosition.getExpirationDate())),
                 Math.round(shortPosition.getDaysToExpiration()),
