@@ -54,8 +54,8 @@ public class ShortVerticalScanner implements Scanner<ShortVerticalScanner.Settin
             }
 
             switch (directionality) {
-                case BEARISH -> tokens.add("Puts only");
-                case BULLISH -> tokens.add("Calls only");
+                case BEARISH -> tokens.add("Calls only");
+                case BULLISH -> tokens.add("Puts only");
             }
 
             return String.join(", ", tokens);

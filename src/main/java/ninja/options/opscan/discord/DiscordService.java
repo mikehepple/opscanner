@@ -6,14 +6,13 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import ninja.options.opscan.cli.OpscanCLI;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,33 +53,36 @@ public class DiscordService extends ListenerAdapter {
 
         jda.retrieveCommands().complete().stream().map(Command::toString).peek(log::info);
 
-        CommandData commandData = new CommandData("opscan", "Run OpScan");
 
-        SubcommandData scanData = new SubcommandData("scan", "Run a scan");
-        scanData.addOption(OptionType.STRING, "symbol", "stock symbol", true);
 
-        OptionData scanTypeOptionData = new OptionData(OptionType.STRING, "type", "Type of scan to run");
-
-        scanTypeOptionData.addChoice("short-put", "short-put");
-        scanTypeOptionData.addChoice("short-call", "short-call");
-        scanTypeOptionData.addChoice("long-vertical", "long-vertical");
-        scanTypeOptionData.addChoice("short-vertical", "short-vertical");
-        scanTypeOptionData.setRequired(true);
-
-        scanData.addOptions(scanTypeOptionData);
-
-        scanData.addOption(OptionType.STRING, "args", "args", false);
-
-        commandData.addSubcommands(scanData);
 
         jda.updateCommands()
-                .addCommands(commandData)
+                .addCommands(new CommandData("opscan", "Run OpScan")
+                        .addSubcommands(createScanSubcommand("scan", "Run OpScan publicly"))
+                        .addSubcommands(createScanSubcommand("scanme", "Run OpScan privately"))
+                )
                 .complete();
+
+        jda.retrieveCommands().complete().stream().forEach(c ->
+                System.out.println(String.format("Registered command: %s %s", c.getName(), c.getId()))
+        );
 
         log.info("Discord connected");
 
         log.info("Logged in as {}", jda.getSelfUser().getAsTag());
 
+    }
+
+    private SubcommandData createScanSubcommand(String name, String description) {
+        return new SubcommandData(name, description)
+                .addOption(OptionType.STRING, "symbol", "stock symbol", true)
+                .addOptions(new OptionData(OptionType.STRING, "type", "Type of scan to run")
+                    .addChoice("short-put", "short-put")
+                    .addChoice("short-call", "short-call")
+                    .addChoice("long-vertical", "long-vertical")
+                    .addChoice("short-vertical", "short-vertical")
+                    .setRequired(true)
+                ).addOption(OptionType.STRING, "args", "args", false);
     }
 
     @Override
@@ -103,12 +105,22 @@ public class DiscordService extends ListenerAdapter {
         var args = Optional.ofNullable(event.getOption("args"))
                 .map(OptionMapping::getAsString).orElse("");
 
+        event.deferReply(true).queue();
 
-        runCommand(String.format("%s %s %s %s", event.getSubcommandName(), symbol, scanType, args), event).queue();
+        InteractionHook hook = event.getHook();
+
+        String commmand = event.getSubcommandName();
+
+        if (commmand.equals("scanme")) {
+            hook.setEphemeral(true);
+            commmand = "scan";
+        }
+
+        runCommand(String.format("%s %s %s %s", commmand, symbol, scanType, args), hook);
 
     }
 
-    protected ReplyAction runCommand(String args, Interaction interaction) {
+    protected void runCommand(String args, InteractionHook hook) {
 
         final ByteArrayOutputStream stdout = new ByteArrayOutputStream();
         final ByteArrayOutputStream stderr = new ByteArrayOutputStream();
@@ -124,7 +136,8 @@ public class DiscordService extends ListenerAdapter {
 
             String err = stderr.toString(StandardCharsets.UTF_8);
             if (err.length() > 0) {
-                return interaction.reply(String.format("```%s```", err)).setEphemeral(true);
+                hook.setEphemeral(true).editOriginal(String.format("```%s```", err)).queue();
+                return;
             }
 
             String data = stdout.toString(StandardCharsets.UTF_8);
@@ -137,7 +150,7 @@ public class DiscordService extends ListenerAdapter {
 
             data = String.format("```%s```", data);
 
-            return interaction.reply(data);
+            hook.editOriginal(data).queue();
         }
     }
 }
